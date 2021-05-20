@@ -75,22 +75,13 @@ for ix=1:16
     [b, a] = demod(wdata, Fc, Fs, 'qam');
     wdm = complex(a, b);
     
-    
-    % xrange
-    wdm_abs=abs(wdm);
-    for i=1:dnum
-        if wdm_abs(i+15,1)-wdm_abs(i,1)>0.04
-            x1=xtime(1,i);
-            break
-        end
-    end
-    
-    xs(1,ix)=x1;
-    
+    [md,mpos]=max(abs(wdm));
+    minpos=min(find(abs(wdm)>(md*0.01)));
+    pos=minpos-30;
     
     figure(1);subplot(4,4,ix)
     pl = plot(xtime,wdata); set(pl,ps)
-    xlim([x1,x1+1.2]);ylim([-ymax ymax]);
+    xlim([xtime(1,pos),xmax]);ylim([-ymax ymax]);
     ylabel('Amplitude')
     
     if ix==2
@@ -107,7 +98,7 @@ for ix=1:16
 
     figure(2);subplot(4,4,ix)
     pl = plot(xtime,abs(wdm)); set(pl,ps)
-    xlim([x1,x1+1.2]);ylim([0 1.2]);
+    xlim(xtime(1,(pos)),xmax]);ylim([0 1.2]);
     ylabel('Amplitude')
     if ix==2
         tp=title(path_name1);set(tp,tx)
@@ -121,7 +112,7 @@ for ix=1:16
     
     figure(3);subplot(4,4,ix)
     pl = plot(xtime,angle(wdm)); set(pl,ps)
-    xlim([x1,x1+1.2]);ylim([-3.99 3.99]);
+    xlim([xtime(1,pos),xmax]);ylim([-3.99 3.99]);
     ylabel('Phase[rad]')
     if ix==2
         tp=title(path_name1);set(tp,tx)
