@@ -28,7 +28,7 @@ dnum=length(wdata);
 xtime = (0:dnum-1)*(1/Fs)*1000;%[mx]
 
 xmin=0; xmax=15;% 0-15ms
-ymin=0; ymax=1.1;
+ymin=0; ymax=1.3;
 xs=zeros(1,16);
 
 f1=figure(1);
@@ -76,12 +76,13 @@ for ix=1:16
     wdm = complex(a, b);
     
     [md,mpos]=max(abs(wdm));
-    minpos=min(find(abs(wdm)>(md*0.01)));
-    pos=minpos-30;
+    minpos=min(find(abs(wdm)>(md*0.15)));
+    xs(1,ix)=xtime(1,minpos);
+    Xs=xs(1,ix);
     
     figure(1);subplot(4,4,ix)
     pl = plot(xtime,wdata); set(pl,ps)
-    xlim([xtime(1,pos),xmax]);ylim([-ymax ymax]);
+    xlim([Xs,Xs+1.1]);ylim([-ymax ymax]);
     ylabel('Amplitude')
     
     if ix==2
@@ -98,7 +99,7 @@ for ix=1:16
 
     figure(2);subplot(4,4,ix)
     pl = plot(xtime,abs(wdm)); set(pl,ps)
-    xlim(xtime(1,(pos)),xmax]);ylim([0 1.2]);
+    xlim([Xs,Xs+1.1]);ylim([0 1.2]);
     ylabel('Amplitude')
     if ix==2
         tp=title(path_name1);set(tp,tx)
@@ -112,7 +113,7 @@ for ix=1:16
     
     figure(3);subplot(4,4,ix)
     pl = plot(xtime,angle(wdm)); set(pl,ps)
-    xlim([xtime(1,pos),xmax]);ylim([-3.99 3.99]);
+    xlim([Xs,Xs+1.1]);ylim([-3.99 3.99]);
     ylabel('Phase[rad]')
     if ix==2
         tp=title(path_name1);set(tp,tx)
