@@ -114,7 +114,7 @@ for ix=1:16
             xlabel('Time(ms)')
     end
     text(T1+0.85,1.4,['CH : ' ch_str],'FontSize',9)
-    set(gca,ax)
+    set(gca,ax)xtim
 
     figure(2);subplot(4,4,ix)
     pl = plot(xtime,abs(wdm)); set(pl,ps)
