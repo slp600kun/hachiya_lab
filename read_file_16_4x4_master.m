@@ -42,10 +42,7 @@ dnum=length(wdata);
 xtime = (0:dnum-1)*(1/Fs)*1000;%[mx]
 
 ymin=0; ymax=1.5;
-t1=zeros(1,16);
-t2=zeros(1,16);
-idxm=zeros(1,16);
-tpo=zeros(1,16);
+v=zeros(1,16);
 
 f1=figure(1);
 set(f1,'Position', [700 500 1200 800])
@@ -92,27 +89,36 @@ for ix=1:16
     
     
     
-    % 伝播時間
-    idxmbase=fix((leng(S1(pos).xpos,S1(pos).ypos,S1(ix).xpos,S1(ix).ypos)*192/0.338-300+0.18*192))+1;
+    % 時間窓設定
+    idxmbase=fix((leng(S1(pos).xpos,S1(pos).ypos,S1(ix).xpos,S1(ix).ypos)*192/0.338-50+0.18*192))+1;
     if idxmbase < 0
         idxmbase = 1;
     end
-    idxm(1,ix)=idxmbase;
-    [tymax,tpos]=max(abs(wdm(idxmbase+1:idxmbase+300)));
-    tpos=idxmbase+tpos;
+    time.spos(1,ix)=idxmbase;
+    time.s(1,ix)=xtime(idxmbase);
+    time.e(1,ix)=xtime(idxmbase+350);
     
-    tp=xtime(tpos);
-    tm=xtime(tpos+300)-0.18;
-    t1(1,ix)=tp;
-    T1=t1(1,ix);
-    t2(1,ix)=tm;
-    T2=t2(1,ix);
+    % 振幅最大値
+    [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+349)));
+    tpos=idxmbase+tpos;
+    tmax.tpos(1,ix)=tpos;
+    tmax.ty(1,ix)=tymax;
+    tmax.t(1,ix)=xtime(tpos);
+    
+    % 伝搬時間
+    pt.pos(1,ix)=find(abs(wdm)>(tymax*0.15), 1 );
+    pt.t(1,ix)=xtime(pt.pos(1,ix))-0.18;
+    
+    %音速
+    v(1,ix)=speed(leng(S1(pos).xpos,S1(pos).ypos,S1(ix).xpos,S1(ix).ypos),pt.t(1,ix));
+    
     
     figure(1);subplot(4,4,ix)
     pl = plot(xtime,wdata); set(pl,ps)
-    xlim([T1,T2]);ylim([-ymax ymax]);
+    xlim([time.s(1,ix),time.e(1,ix)]);ylim([-ymax ymax]);
     hold on
     xline(xtime(tpos),'-r');
+    xline(pt.t(1,ix),'-b');
     hold off
     ylabel('Amplitude')
     
@@ -123,14 +129,15 @@ for ix=1:16
     elseif ix >= 13
             xlabel('Time(ms)')
     end
-    text(T1+0.85,1.4,['CH : ' ch_str],'FontSize',9)
+    text(time.s(1,ix),1.4,['CH : ' ch_str],'FontSize',9)
     set(gca,ax)
 
     figure(2);subplot(4,4,ix)
     pl = plot(xtime,abs(wdm)); set(pl,ps)
-    xlim([T1,T2]);ylim([0 1.2]);
+    xlim([time.s(1,ix),time.e(1,ix)]);ylim([0 1.2]);
     hold on
     xline(xtime(tpos),'-r');
+    xline(pt.t(1,ix),'-b');
     hold off
     ylabel('Amplitude')
     if ix==2
@@ -140,12 +147,12 @@ for ix=1:16
     elseif ix >= 13
             xlabel('Time(ms)')
     end
-    text(T1+0.85,1.1,['CH : ' ch_str],'FontSize',9)
+    text(time.s(1,ix),1.1,['CH : ' ch_str],'FontSize',9)
     set(gca,ax)
     
     figure(3);subplot(4,4,ix)
     pl = plot(xtime,angle(wdm)); set(pl,ps)
-    xlim([T1,T2]);ylim([-3.99 3.99]);
+    xlim([time.s(1,ix),time.e(1,ix)]);ylim([-3.99 3.99]);
     ylabel('Phase[rad]')
     if ix==2
         tp=title(path_name1);set(tp,tx)
@@ -154,7 +161,7 @@ for ix=1:16
     elseif ix >= 13
             xlabel('Time(ms)')
     end
-    text(T1+0.85,3.5,['CH : ' ch_str],'FontSize',9)
+    text(time.s(1,ix),3.5,['CH : ' ch_str],'FontSize',9)
     set(gca,ax)
     
 end
@@ -163,6 +170,11 @@ end
 function len=leng(x1,y1,x2,y2)
     l=(x1-x2)^2+(y1-y2)^2;
     len=sqrt(l);
+end
+
+%% 音速
+function v=speed(l,t)
+    v=l/t;
 end
 
 
