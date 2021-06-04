@@ -125,7 +125,7 @@ for ix=1:16
     tmax.t(1,ix)=xtime(tpos);
     
     % 伝搬時間
-    pt.pos(1,ix)=find(abs(wdm)>(tymax*0.12), 1 );
+    pt.pos(1,ix)=find(abs(wdm(idxmbase:idxmbase+349))>(tymax*0.05), 1 )+idxmbase;
     pt.t(1,ix)=xtime(pt.pos(1,ix))-0.18;
     
     %音速
