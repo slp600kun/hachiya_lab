@@ -45,7 +45,6 @@ dnum=length(wdata);
 xtime = (0:dnum-1)*(1/Fs)*1000;%[mx]
 
 ymin=0; ymax=1.5;
-v=zeros(1,16);
 
 %% 温度
 if No<9
@@ -153,7 +152,11 @@ for ix=1:8
     pt.tm(1,ix)=xtime(pt.tmpos(1,ix))-0.18;
 end
 
-
+%% 風速
+v=zeros(1,8);
+for i=1:8
+    v(1,i)=wind(leng(S1(i).xpos,S1(i).ypos,S1(i+8).xpos,S1(i+8).ypos),pt.tm(1,i)/1000,pt.tp(1,i)/1000);
+end
 
 
 
@@ -168,7 +171,7 @@ function len=leng(x1,y1,x2,y2)
     len=sqrt(l);
 end
 
-%% 音速
-function v=speed(l,t)
-    v=l/t;
+%% 風速
+function v=wind(l,tp,tm)
+    v=2*l*(tm-tp)/(tm+tp).^2;
 end
