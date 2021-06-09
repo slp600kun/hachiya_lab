@@ -131,7 +131,7 @@ for ix=1:8
     [b, a] = demod(wdata, Fc, Fs, 'qam');
     wdm = complex(a, b);
     % 時間窓設定
-    idxmbase=fix((leng(S1(pos).xpos,S1(pos).ypos,S1(pos+8).xpos,S1(pos+8).ypos)*192000/T-50+0.18*192))+1;
+    idxmbase=fix((leng(S1(ix).xpos,S1(ix).ypos,S1(ix+8).xpos,S1(ix+8).ypos)*192000/T-50+0.18*192))+1;
     if idxmbase < 0
         idxmbase = 1;
     end
@@ -155,10 +155,19 @@ end
 %% 風速
 v=zeros(1,8);
 for i=1:8
-    v(1,i)=wind(leng(S1(i).xpos,S1(i).ypos,S1(i+8).xpos,S1(i+8).ypos),pt.tm(1,i)/1000,pt.tp(1,i)/1000);
+    v(1,i)=wind(leng(S1(i).xpos,S1(i).ypos,S1(i+8).xpos,S1(i+8).ypos),pt.tp(1,i)/1000,pt.tm(1,i)/1000);
 end
 
+%% 風速ベクトル
+w=zeros(2,1);
+for iw=1:8
+    ver=[S1(iw+8).xpos-S1(iw).xpos ; S1(iw+8).ypos-S1(iw).ypos];
+    w=w+normc(ver).*v(1,iw); 
+end    
 
+w=w/iw;
+quiver(0,0,w(1),w(2));
+axis ([-1.5 1.5 -1.5 1.5])
 
 %% from templeture to speed of sound
 function T=tem(t)
