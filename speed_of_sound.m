@@ -72,6 +72,13 @@ set(f2,'Position', [600 300 1200 800])
 f3=figure(3);
 set(f3,'Position', [500 100 1200 800])
 
+%% グラフの切り取り範囲
+if 1 <= rem(str2double(path_name1(1:2)),8) && rem(str2double(path_name1(1:2)),8) <=4
+    timew=350;
+else
+    timew=150;
+end
+
 %% Filter 設定
 iftr=1;
 
@@ -115,17 +122,17 @@ for ix=1:16
     end
     time.spos(1,ix)=idxmbase;
     time.s(1,ix)=xtime(idxmbase);
-    time.e(1,ix)=xtime(idxmbase+350);
+    time.e(1,ix)=xtime(idxmbase+timew);
     
     % 振幅最大値
-    [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+349)));
+    [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+timew-1)));
     tpos=idxmbase+tpos;
     tmax.tpos(1,ix)=tpos;
     tmax.ty(1,ix)=tymax;
     tmax.t(1,ix)=xtime(tpos);
     
     % 伝搬時間
-    pt.pos(1,ix)=find(abs(wdm(idxmbase:idxmbase+349))>(tymax*0.05), 1 )+idxmbase;
+    pt.pos(1,ix)=find(abs(wdm(idxmbase:idxmbase+timew-1))>(tymax*0.05), 1 )+idxmbase;
     pt.t(1,ix)=xtime(pt.pos(1,ix))-0.18;
     
     %音速

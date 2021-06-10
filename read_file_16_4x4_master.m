@@ -58,6 +58,13 @@ else
 end
 T=tem((S2(No).x____testo____________+S2(No).Var11)/2);
 
+%% グラフの切り取り範囲
+if 1 <= rem(str2double(path_name1(1:2)),8) && rem(str2double(path_name1(1:2)),8) <=4
+    timew=350;
+else
+    timew=150;
+end
+
 %% Filter 設定
 iftr=1;
 
@@ -98,20 +105,20 @@ for ix=1:8
     if idxmbase < 0
         idxmbase = 1;
     end
-    time.sppos(1,ix)=idxmbase;
-    time.sp(1,ix)=xtime(idxmbase);
-    time.ep(1,ix)=xtime(idxmbase+350);
+    time.sppos(ix)=idxmbase;
+    time.sp(ix)=xtime(idxmbase);
+    time.ep(ix)=xtime(idxmbase+timew);
     
     % 振幅最大値
-    [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+350)));
+    [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+timew)));
     tpos=idxmbase+tpos;
-    tmax.tppos(1,ix)=tpos;
-    tmax.tpy(1,ix)=tymax;
-    tmax.tp(1,ix)=xtime(tpos);
+    tmax.tppos(ix)=tpos;
+    tmax.tpy(ix)=tymax;
+    tmax.tp(ix)=xtime(tpos);
     
     % 伝搬時間
-    pt.tppos(1,ix)=find(abs(wdm(idxmbase:idxmbase+350))>(tymax*0.05), 1 )+idxmbase;
-    pt.tp(1,ix)=xtime(pt.tppos(1,ix))-0.18;
+    pt.tppos(ix)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.05), 1 )+idxmbase;
+    pt.tp(ix)=xtime(pt.tppos(ix))-0.18;
     
    %% 反対側
     path(end-2:end-1) = num2str(ix+8,'%02d');
@@ -136,33 +143,33 @@ for ix=1:8
         idxmbase = 1;
     end
 
-    time.smpos(1,ix)=idxmbase;
-    time.sm(1,ix)=xtime(idxmbase);
-    time.em(1,ix)=xtime(idxmbase+350);
+    time.smpos(ix)=idxmbase;
+    time.sm(ix)=xtime(idxmbase);
+    time.em(ix)=xtime(idxmbase+timew);
     
     % 振幅最大値
-    [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+350)));
+    [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+timew)));
     tpos=idxmbase+tpos;
-    tmax.tmpos(1,ix)=tpos;
-    tmax.tmy(1,ix)=tymax;
-    tmax.tm(1,ix)=xtime(tpos);
+    tmax.tmpos(ix)=tpos;
+    tmax.tmy(ix)=tymax;
+    tmax.tm(ix)=xtime(tpos);
     
     % 伝搬時間
-    pt.tmpos(1,ix)=find(abs(wdm(idxmbase:idxmbase+350))>(tymax*0.05), 1 )+idxmbase;
-    pt.tm(1,ix)=xtime(pt.tmpos(1,ix))-0.18;
+    pt.tmpos(ix)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.05), 1 )+idxmbase;
+    pt.tm(ix)=xtime(pt.tmpos(1,ix))-0.18;
 end
 
 %% 風速
-v=zeros(1,8);
+v=zeros(8,1);
 for i=1:8
-    v(1,i)=wind(leng(S1(i).xpos,S1(i).ypos,S1(i+8).xpos,S1(i+8).ypos),pt.tp(1,i)/1000,pt.tm(1,i)/1000);
+    v(i)=wind(leng(S1(i).xpos,S1(i).ypos,S1(i+8).xpos,S1(i+8).ypos),pt.tp(1,i)/1000,pt.tm(1,i)/1000);
 end
 
 %% 風速ベクトル
 w=zeros(2,1);
 for iw=1:8
     ver=[S1(iw+8).xpos-S1(iw).xpos ; S1(iw+8).ypos-S1(iw).ypos];
-    w=w+normc(ver).*v(1,iw); 
+    w=w+normc(ver).*v(iw); 
 end    
 
 w=w/iw;
