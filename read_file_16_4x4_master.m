@@ -65,6 +65,13 @@ else
     timew=150;
 end
 
+%% グラフデータ
+f1=figure(1);
+set(f1,'Position', [700 500 1200 800])
+
+f2=figure(2);
+set(f2,'Position', [700 500 1200 800])
+
 %% Filter 設定
 iftr=1;
 
@@ -80,6 +87,7 @@ if iftr==1
     
     delay = round(mean(grpdelay(d)))+1;
 end
+
 
 for ix=1:8
 
@@ -156,7 +164,7 @@ for ix=1:8
     
     % 伝搬時間
     pt.tmpos(ix)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.05), 1 )+idxmbase;
-    pt.tm(ix)=xtime(pt.tmpos(1,ix))-0.18;
+    pt.tm(ix)=xtime(pt.tmpos(ix))-0.18;
 end
 
 %% 風速
@@ -166,15 +174,58 @@ for i=1:8
 end
 
 %% 風速ベクトル
+figure(1);
 w=zeros(2,1);
+wlist=zeros(8,2);
+hold on
 for iw=1:8
     ver=[S1(iw+8).xpos-S1(iw).xpos ; S1(iw+8).ypos-S1(iw).ypos];
-    w=w+normc(ver).*v(iw); 
+    w=normc(ver).*v(iw); 
+    quiver(0,0,w(1),w(2));
+    axis ([-4 4 -4 4]);
+    wlist(iw,:)=w(:);
 end    
 
-w=w/iw;
-quiver(0,0,w(1),w(2));
-axis ([-1.5 1.5 -1.5 1.5])
+wav=zeros(2,1);
+for iav=1:8
+    wav(1)=wav(1)+wlist(iav,1);
+    wav(2)=wav(2)+wlist(iav,2);
+end
+wav(1)=wav(1)/8;
+wav(2)=wav(2)/8;
+quiver(0,0,wav(1),wav(2),'-k','LineWidth',3);
+hold off
+
+%% 音速
+c=zeros(8,1);
+for i=1:8
+    c(i)=sound(leng(S1(i).xpos,S1(i).ypos,S1(i+8).xpos,S1(i+8).ypos),pt.tp(1,i)/1000,pt.tm(1,i)/1000);
+end
+
+%% 音速ベクトル
+figure(2);
+cv=zeros(2,1);
+cvlist=zeros(8,2);
+hold on
+for iw=1:8
+    ver=[S1(iw+8).xpos-S1(iw).xpos ; S1(iw+8).ypos-S1(iw).ypos];
+    cv=normc(ver).*c(iw); 
+    quiver(0,0,cv(1),cv(2));
+    axis ([-400 400 -400 400]);
+    cvlist(iw,:)=cv(:);
+end    
+
+cvav=zeros(2,1);
+for iav=1:8
+    cvav(1)=cvav(1)+wlist(iav,1);
+    cvav(2)=cvav(2)+wlist(iav,2);
+end
+cvav(1)=cvav(1)/8;
+cvav(2)=cvav(2)/8;
+quiver(0,0,cvav(1),cvav(2),'-k','LineWidth',3);
+hold off
+
+
 
 %% from templeture to speed of sound
 function T=tem(t)
@@ -190,4 +241,9 @@ end
 %% 風速
 function v=wind(l,tp,tm)
     v=2*l*(tm-tp)/(tm+tp).^2;
+end
+
+%% 音速
+function c=sound(l,tp,tm)
+    c=2*l/(tp+tm);
 end
