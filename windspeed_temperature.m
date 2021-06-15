@@ -96,13 +96,15 @@ c=zeros(8,3);
 cv=zeros(2,1);
 cvlist=zeros(8,6);
 cvav=zeros(2,3);
-
+micpos=[12;11;11;9;16;15;14;13];
 
 for i=1:3
     for ix=1:8
+        rec=micpos(ix);
+        
         path(end-2:end-1)= num2str(ix+(i-1)*16,'%02d');
         path_name2(8:9)= num2str(ix+(i-1)*16,'%02d');
-        file(3:4) = num2str(ix+8,'%02d');
+        file(3:4) = num2str(rec,'%02d');
         file(9:10) = num2str(ix+(i-1)*16,'%02d');
         % Filter 処理 
         if iftr==1
@@ -118,7 +120,7 @@ for i=1:3
 
 
         % 時間窓設定
-        idxmbase=fix((leng(S1(ix).xpos,S1(ix).ypos,S1(ix+8).xpos,S1(ix+8).ypos)*192000/T-50+0.18*192))+1;
+        idxmbase=fix((leng(S1(ix).xpos,S1(ix).ypos,S1(rec).xpos,S1(rec).ypos)*192000/T-50+0.18*192))+1;
         if idxmbase < 0
             idxmbase = 1;
         end
@@ -134,14 +136,14 @@ for i=1:3
         tmax.tp(ix,i)=xtime(tpos);
 
         % 伝搬時間
-        pt.tppos(ix,i)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.05), 1 )+idxmbase;
+        pt.tppos(ix,i)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.1), 1 )+idxmbase;
         pt.tp(ix,i)=xtime(pt.tppos(ix,i))-0.18;
 
        %% 反対側
-        path(end-2:end-1) = num2str(ix+8+(i-1)*16,'%02d');
-        path_name2(8:9)= num2str(ix+8+(i-1)*16,'%02d');
+        path(end-2:end-1) = num2str(rec+(i-1)*16,'%02d');
+        path_name2(8:9)= num2str(rec+(i-1)*16,'%02d');
         file(3:4) = num2str(ix,'%02d');
-        file(9:10) = num2str(ix+8+(i-1)*16,'%02d');
+        file(9:10) = num2str(rec+(i-1)*16,'%02d');
 
         % Filter 処理 
         if iftr==1
@@ -155,7 +157,7 @@ for i=1:3
         [b, a] = demod(wdata, Fc, Fs, 'qam');
         wdm = complex(a, b);
         % 時間窓設定
-        idxmbase=fix((leng(S1(ix).xpos,S1(ix).ypos,S1(ix+8).xpos,S1(ix+8).ypos)*192000/T-50+0.18*192))+1;
+        idxmbase=fix((leng(S1(ix).xpos,S1(ix).ypos,S1(rec).xpos,S1(rec).ypos)*192000/T-50+0.18*192))+1;
         if idxmbase < 0
             idxmbase = 1;
         end
@@ -172,13 +174,13 @@ for i=1:3
         tmax.tm(ix,i)=xtime(tpos);
 
         % 伝搬時間
-        pt.tmpos(ix,i)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.05), 1 )+idxmbase;
+        pt.tmpos(ix,i)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.1), 1 )+idxmbase;
         pt.tm(ix,i)=xtime(pt.tmpos(ix,i))-0.18;
     end
     
     %% 風速
     for iv=1:8
-        v(iv,i)=wind(leng(S1(iv).xpos,S1(iv).ypos,S1(iv+8).xpos,S1(iv+8).ypos),pt.tp(iv,i)/1000,pt.tm(iv,i)/1000);
+        v(iv,i)=wind(leng(S1(iv).xpos,S1(iv).ypos,S1(micpos(iv)).xpos,S1(micpos(iv)).ypos),pt.tp(iv,i)/1000,pt.tm(iv,i)/1000);
     end
 
     %% 風速ベクトル
@@ -187,10 +189,10 @@ for i=1:3
     
     hold on
     for iw=1:8
-        ver=[S1(iw+8).xpos-S1(iw).xpos ; S1(iw+8).ypos-S1(iw).ypos];
+        ver=[S1(micpos(iw)).xpos-S1(iw).xpos ; S1(micpos(iw)).ypos-S1(iw).ypos];
         w=normc(ver).*v(iw,i); 
-        quiver(0,0,w(1),w(2));
-        axis ([-4 4 -4 4]);
+        quiver((S1(iw).xpos+S1(micpos(iw)).xpos)/2,(S1(iw).ypos+S1(micpos(iw)).ypos)/2,w(1),w(2));
+        axis ([-1.5 1.5 -1.5 1.5]);
         wlist(iw,2*i-1:2*i)=w(:);
     end    
 
@@ -206,7 +208,7 @@ for i=1:3
     
     %% 音速
     for ic=1:8
-        c(ic,i)=sound(leng(S1(ic).xpos,S1(ic).ypos,S1(ic+8).xpos,S1(ic+8).ypos),pt.tp(ic,i)/1000,pt.tm(ic,i)/1000);
+        c(ic,i)=sound(leng(S1(ic).xpos,S1(ic).ypos,S1(micpos(ic)).xpos,S1(micpos(ic)).ypos),pt.tp(ic,i),pt.tm(ic,i));
     end
 
     %% 音速ベクトル
@@ -214,9 +216,9 @@ for i=1:3
     subplot(1,3,i);
     hold on
     for iw=1:8
-        ver=[S1(iw+8).xpos-S1(iw).xpos ; S1(iw+8).ypos-S1(iw).ypos];
+        ver=[S1(micpos(iw)).xpos-S1(iw).xpos ; S1(micpos(iw)).ypos-S1(iw).ypos];
         cv=normc(ver).*c(iw,i); 
-        quiver(0,0,cv(1),cv(2));
+        quiver((S1(iw).xpos+S1(micpos(iw)).xpos)/2,(S1(iw).ypos+S1(micpos(iw)).ypos)/2,cv(1),cv(2));
         axis ([-400 400 -400 400]);
         cvlist(iw,2*i-1:2*i)=cv(:);
     end    
@@ -233,7 +235,7 @@ for i=1:3
 end
 
 
-%% from temperature to speed of sound
+%% from templeture to speed of sound
 function T=tem(t)
     T=331.5+0.6*t;
 end
