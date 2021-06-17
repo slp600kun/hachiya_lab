@@ -10,7 +10,9 @@ filename1 = '6_sonar_tr4x4_pos_b41.csv';
 T1 = readtable(filename1);
 S1 = table2struct(T1);
 filename2 = '1_meas_item_list_rev.xlsx';
-T2 = readtable(filename2);
+T2 = readtable(filename2,'VariableNamingRule','preserve');
+T2.Properties.VariableNames{'・データは2回ずつ取得'} = 'Var1';
+T2.Properties.VariableNames{'※湿度はtesto温湿度計を使用した参考値'} = 'Var10';
 S2 = table2struct(T2);
 %% ファイル名
 [file,path] = uigetfile('.\2_tof_data\*.wav','Select a File');
@@ -35,10 +37,6 @@ if pos==0
 end
 
 
-ch_str = num2str(pos+8,'%02d') ;
-file(3:4) = ch_str ;
-pos_str = num2str(pos,'%02d');
-
 %% サンプリング周波数
 [wdata,Fs] = audioread([path file]) ;
 dnum=length(wdata);
@@ -56,7 +54,7 @@ elseif 16 < No&&No <25
 else
     No=25;
 end
-T=tem1((S2(No).x____testo____________+S2(No).Var11)/2);
+T=tem1((S2(No).Var10+S2(No).Var11)/2);
 
 %% グラフの切り取り範囲
 if 1 <= rem(str2double(path_name1(1:2)),8) && rem(str2double(path_name1(1:2)),8) <=4
@@ -90,11 +88,7 @@ end
 w=zeros(2,1);
 wlist=zeros(8,6);
 v=zeros(8,3);
-wav=zeros(2,3);
 c=zeros(8,3);
-cv=zeros(2,1);
-cvlist=zeros(8,6);
-cvav=zeros(2,3);
 tem=zeros(8,3);
 micpos=[12;11;10;9;16;15;14;13];
 
