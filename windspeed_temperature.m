@@ -44,7 +44,7 @@ pos_str = num2str(pos,'%02d');
 dnum=length(wdata);
 xtime = (0:dnum-1)*(1/Fs)*1000;%[mx]
 
-ymin=0; ymax=1.5;
+
 
 %% 温度
 if No<9
@@ -56,7 +56,7 @@ elseif 16 < No&&No <25
 else
     No=25;
 end
-T=tem((S2(No).x____testo____________+S2(No).Var11)/2);
+T=tem1((S2(No).x____testo____________+S2(No).Var11)/2);
 
 %% グラフの切り取り範囲
 if 1 <= rem(str2double(path_name1(1:2)),8) && rem(str2double(path_name1(1:2)),8) <=4
@@ -67,10 +67,9 @@ end
 
 %% グラフデータ
 f1=figure(1);
-set(f1,'Position', [700 600 1500 500])
+set(f1,'Position', [500 400 1500 500])
 
-f2=figure(2);
-set(f2,'Position', [700 500 1500 500])
+
 
 %% Filter 設定
 iftr=1;
@@ -96,7 +95,8 @@ c=zeros(8,3);
 cv=zeros(2,1);
 cvlist=zeros(8,6);
 cvav=zeros(2,3);
-micpos=[12;11;11;9;16;15;14;13];
+tem=zeros(8,3);
+micpos=[12;11;10;9;16;15;14;13];
 
 for i=1:3
     for ix=1:8
@@ -190,54 +190,37 @@ for i=1:3
     hold on
     for iw=1:8
         ver=[S1(micpos(iw)).xpos-S1(iw).xpos ; S1(micpos(iw)).ypos-S1(iw).ypos];
-        w=normc(ver).*v(iw,i); 
+        w=normc(ver).*v(iw,i);  %%風速を各方向の単位ベクトルに掛ける
         quiver((S1(iw).xpos+S1(micpos(iw)).xpos)/2,(S1(iw).ypos+S1(micpos(iw)).ypos)/2,w(1),w(2));
-        axis ([-1.5 1.5 -1.5 1.5]);
+        axis ([-0.75 0.75 -0.75 0.75]);
         wlist(iw,2*i-1:2*i)=w(:);
     end    
 
-    
-    for iwav=1:8
-        wav(1,i)=wav(1,i)+wlist(iwav,2*i-1);
-        wav(2,i)=wav(2,i)+wlist(iwav,2*i);
-    end
-    wav(1,i)=wav(1,i)/8;
-    wav(2,i)=wav(2,i)/8;
-    quiver(0,0,wav(1,i),wav(2,i),'-k','LineWidth',3);
     hold off
     
     %% 音速
     for ic=1:8
         c(ic,i)=sound(leng(S1(ic).xpos,S1(ic).ypos,S1(micpos(ic)).xpos,S1(micpos(ic)).ypos),pt.tp(ic,i),pt.tm(ic,i));
     end
-
-    %% 音速ベクトル
-    figure(2);
-    subplot(1,3,i);
-    hold on
-    for iw=1:8
-        ver=[S1(micpos(iw)).xpos-S1(iw).xpos ; S1(micpos(iw)).ypos-S1(iw).ypos];
-        cv=normc(ver).*c(iw,i); 
-        quiver((S1(iw).xpos+S1(micpos(iw)).xpos)/2,(S1(iw).ypos+S1(micpos(iw)).ypos)/2,cv(1),cv(2));
-        axis ([-400 400 -400 400]);
-        cvlist(iw,2*i-1:2*i)=cv(:);
+    
+    %% 温度
+    for it=1:8
+        tem(it,i)=tem2(1000*c(it,i));
     end    
 
-    for icav=1:8
-        cvav(1,i)=cvav(1,i)+wlist(icav,1);
-        cvav(2,i)=cvav(2,i)+wlist(icav,2);
-    end
-    cvav(1,i)=cvav(1,i)/8;
-    cvav(2,i)=cvav(2,i)/8;
-    quiver(0,0,cvav(1,i),cvav(2,i),'-k','LineWidth',3);
-    hold off
 
 end
 
+disp(tem)
 
 %% from templeture to speed of sound
-function T=tem(t)
+function T=tem1(t)
     T=331.5+0.6*t;
+end
+
+%% from templeture to speed of sound
+function T=tem2(t)
+    T=(abs(t)-331.5)/0.6;
 end
 
 %% length
