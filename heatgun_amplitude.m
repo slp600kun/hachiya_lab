@@ -42,7 +42,9 @@ if posA == 0
     posA = 16;
 end
 micpos = [12;11;10;9;16;15;14;13];
-posB = micpos(posA);
+
+prompt = 'What is the compareing speaker? ';
+newposA = input(prompt);
 
 %% サンプリング周波数
 [wdata,Fs] = audioread([path file]) ;
@@ -90,6 +92,7 @@ if iftr==1
 end
 
 Amp=zeros(2,3);
+Tp=zeros(2,3);
 
 
 for i=1:2
@@ -98,120 +101,68 @@ for i=1:2
     for j=1:3
         path(end-2:end-1)= num2str(posA+(j-1)*16,'%02d');
         path_name2(8:9)= num2str(posA+(j-1)*16,'%02d');
-        file(3:4) = num2str(posB,'%02d');
+        file(3:4) = num2str(micpos(posA),'%02d');
         file(9:10) = num2str(posA+(j-1)*16,'%02d');
         
-        % Filter 処理 
-        if iftr==1
-            [wdata_tmp,Fs] = audioread([path file]) ;
-            wdata=filter(d,wdata_tmp) ;
-            wdata(1:end-delay+1) = wdata(delay:end);
-        else
-            [wdata,Fs] = audioread([path file]);
-        end
-
-        [b, a] = demod(wdata, Fc, Fs, 'qam');
-        wdm = complex(a, b);
-
-
-        % 時間窓設定
-        idxmbase=fix((1.5*192000/T-50+0.18*192))+1;
-        if idxmbase < 0
-            idxmbase = 1;
-        end
-        time.sppos(i,j)=idxmbase;
-        time.sp(i,j)=xtime(idxmbase);
-        time.ep(i,j)=xtime(idxmbase+timew);
-
-        % 振幅最大値
-        [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+timew)));
-        tpos=idxmbase+tpos;
-        tmax.tppos(i,j)=tpos;
-        tmax.tpy(i,j)=tymax;
-        tmax.tp(i,j)=xtime(tpos);
-
-        % 伝搬時間
-        pt.tppos(i,j)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.1), 1 )+idxmbase;
-        pt.tp(i,j)=xtime(pt.tppos(i,j))-0.18;
-        
-        timesub.sppos(i,j)=pt.tppos(i,j)+fix(0.5*192);
-        timesub.sp(i,j)=xtime(timesub.sppos(i,j))-0.18;
-        timesub.eppos(i,j)=timesub.sppos(i,j)+fix(0.1*192);
-        
-        amp=0;
-        for k=timesub.sppos(i,j):timesub.eppos(i,j)
-            amp=amp+abs(wdm(k));
-        end
-        amp=amp/(timesub.eppos(i,j)-timesub.sppos(i,j)+1);
-        Amp(i,j)=amp;
-        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew);
         
         figure(1);subplot(1,2,2)
         hold on
-        plot(pt.tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
         hold off
         xlim([4.4 4.45]);ylim([0 1.2]);
         xlabel('Time(ms)')
         ylabel('Amplitude')
         grid on
-        tp=title({strcat(num2str(No),path_name1(3:end));strcat(num2str(No+1),path_name1(3:end))});set(tp,tx)
+        tp=title({strcat(num2str(No),path_name1(3:end));strcat(num2str(No+1),path_name1(3:end))});set(tp,tx)        
+    end
+    
+    %% 反対側
+    mil=8-posA+1;
+    for j=1:3
+        path(end-2:end-1)= num2str(mil+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(mil+(j-1)*16,'%02d');
+        file(3:4) = num2str(micpos(mil),'%02d');
+        file(9:10) = num2str(mil+(j-1)*16,'%02d');
         
-        %同様の条件の場所
-        path(end-2:end-1)= num2str(8-posA+1+(j-1)*16,'%02d');
-        path_name2(8:9)= num2str(8-posA+1+(j-1)*16,'%02d');
-        file(3:4) = num2str(micpos(8-posA+1),'%02d');
-        file(9:10) = num2str(8-posA+1+(j-1)*16,'%02d');
-        
-        % Filter 処理 
-        if iftr==1
-            [wdata_tmp,Fs] = audioread([path file]) ;
-            wdata=filter(d,wdata_tmp) ;
-            wdata(1:end-delay+1) = wdata(delay:end);
-        else
-            [wdata,Fs] = audioread([path file]);
-        end
-
-        [b, a] = demod(wdata, Fc, Fs, 'qam');
-        wdm = complex(a, b);
-
-
-        % 時間窓設定
-        idxmbase=fix((1.5*192000/T-50+0.18*192))+1;
-        if idxmbase < 0
-            idxmbase = 1;
-        end
-        time.sppos(i,j)=idxmbase;
-        time.sp(i,j)=xtime(idxmbase);
-        time.ep(i,j)=xtime(idxmbase+timew);
-
-        % 振幅最大値
-        [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+timew)));
-        tpos=idxmbase+tpos;
-        tmax.tppos(i,j)=tpos;
-        tmax.tpy(i,j)=tymax;
-        tmax.tp(i,j)=xtime(tpos);
-
-        % 伝搬時間
-        pt.tppos(i,j)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.1), 1 )+idxmbase;
-        pt.tp(i,j)=xtime(pt.tppos(i,j))-0.18;
-        
-        timesub.sppos(i,j)=pt.tppos(i,j)+fix(0.5*192);
-        timesub.sp(i,j)=xtime(timesub.sppos(i,j))-0.18;
-        timesub.eppos(i,j)=timesub.sppos(i,j)+fix(0.1*192);
-        
-        amp=0;
-        for k=timesub.sppos(i,j):timesub.eppos(i,j)
-            amp=amp+abs(wdm(k));
-        end
-        amp=amp/(timesub.eppos(i,j)-timesub.sppos(i,j)+1);
-        Amp(i,j)=amp;
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew);
         
         figure(1);subplot(1,2,2)
         hold on
-        plot(pt.tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
         hold off
-    
     end
+    
+    %% 比較対象
+    for j=1:3
+        path(end-2:end-1)= num2str(newposA+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(newposA+(j-1)*16,'%02d');
+        file(3:4) = num2str(micpos(newposA),'%02d');
+        file(9:10) = num2str(newposA+(j-1)*16,'%02d');
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew);
+        
+        figure(1);subplot(1,2,2)
+        hold on
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+        hold off
+
+    end
+    
+    
+    mil=8-newposA+1;
+    for j=1:3
+        path(end-2:end-1)= num2str(mil+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(mil+(j-1)*16,'%02d');
+        file(3:4) = num2str(micpos(mil),'%02d');
+        file(9:10) = num2str(mil+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew);
+        
+        figure(1);subplot(1,2,2)
+        hold on
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+        hold off
+    end  
 end
 
 path = erase(path,path(pos_wn+4:pos_frame-2));
@@ -223,65 +174,67 @@ for i=1:2
     for j=1:3
         path(end-2:end-1)= num2str(posA+(j-1)*16,'%02d');
         path_name2(8:9)= num2str(posA+(j-1)*16,'%02d');
-        file(3:4) = num2str(posB,'%02d');
+        file(3:4) = num2str(micpos(posA),'%02d');
         file(9:10) = num2str(posA+(j-1)*16,'%02d');
-        
-        % Filter 処理 
-        if iftr==1
-            [wdata_tmp,Fs] = audioread([path file]) ;
-            wdata=filter(d,wdata_tmp) ;
-            wdata(1:end-delay+1) = wdata(delay:end);
-        else
-            [wdata,Fs] = audioread([path file]);
-        end
-
-        [b, a] = demod(wdata, Fc, Fs, 'qam');
-        wdm = complex(a, b);
-
-
-        % 時間窓設定
-        idxmbase=fix((1.5*192000/T-50+0.18*192))+1;
-        if idxmbase < 0
-            idxmbase = 1;
-        end
-        time.sppos(i,j)=idxmbase;
-        time.sp(i,j)=xtime(idxmbase);
-        time.ep(i,j)=xtime(idxmbase+timew);
-
-        % 振幅最大値
-        [tymax,tpos]=max(abs(wdm(idxmbase:idxmbase+timew)));
-        tpos=idxmbase+tpos;
-        tmax.tppos(i,j)=tpos;
-        tmax.tpy(i,j)=tymax;
-        tmax.tp(i,j)=xtime(tpos);
-
-        % 伝搬時間
-        pt.tppos(i,j)=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.1), 1 )+idxmbase;
-        pt.tp(i,j)=xtime(pt.tppos(i,j))-0.18;
-        
-        timesub.sppos(i,j)=pt.tppos(i,j)+fix(0.5*192);
-        timesub.sp(i,j)=xtime(timesub.sppos(i,j))-0.18;
-        timesub.eppos(i,j)=timesub.sppos(i,j)+fix(0.1*192);
-        
-        amp=0;
-        for k=timesub.sppos(i,j):timesub.eppos(i,j)
-            amp=amp+abs(wdm(k));
-        end
-        amp=amp/(timesub.eppos(i,j)-timesub.sppos(i,j)+1);
-        Amp(i,j)=amp;
-       
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew);
         
         figure(1);subplot(1,2,1)
         hold on
-        plot(pt.tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
         hold off
         xlim([4.4 4.45]);ylim([0 1.2]);
         xlabel('Time(ms)')
         ylabel('Amplitude')
         grid on
         tp=title({strcat(num2str(rem(No,8)),path_name1(3:end));strcat(num2str(rem(No,8)+1),path_name1(3:end))});set(tp,tx)
-    
     end
+    
+    %% 反対側
+    mil=8-posA+1;
+    for j=1:3
+        path(end-2:end-1)= num2str(mil+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(mil+(j-1)*16,'%02d');
+        file(3:4) = num2str(micpos(mil),'%02d');
+        file(9:10) = num2str(mil+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew);
+        
+        figure(1);subplot(1,2,1)
+        hold on
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
+        hold off
+    end
+    
+    %% 比較対象
+    for j=1:3
+        path(end-2:end-1)= num2str(newposA+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(newposA+(j-1)*16,'%02d');
+        file(3:4) = num2str(micpos(newposA),'%02d');
+        file(9:10) = num2str(newposA+(j-1)*16,'%02d');
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew);
+        
+        figure(1);subplot(1,2,1)
+        hold on
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+        hold off
+    end
+    
+    
+    mil=8-newposA+1;
+    for j=1:3
+        path(end-2:end-1)= num2str(mil+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(mil+(j-1)*16,'%02d');
+        file(3:4) = num2str(micpos(mil),'%02d');
+        file(9:10) = num2str(mil+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew);
+        
+        figure(1);subplot(1,2,1)
+        hold on
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+        hold off
+    end        
+    
 end
 
 
@@ -291,7 +244,7 @@ function T=tem1(t)
 end
 
 
-function tp=denpan(path,file,timew)
+function[tp,amp]=denpan(iftr,d,delay,Fc,T,xtime,path,file,timew)
         % Filter 処理 
         if iftr==1
             [wdata_tmp,Fs] = audioread([path file]) ;
@@ -317,4 +270,14 @@ function tp=denpan(path,file,timew)
         % 伝搬時間
         tppos=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.1), 1 )+idxmbase;
         tp=xtime(tppos)-0.18;
+        
+        timest=tppos+fix(0.5*192);
+        timeen=timest+fix(0.5*192);
+        
+        amp=0;
+        for k=timest:timeen
+            amp=amp+abs(wdm(k));
+        end
+        amp=amp/(timeen-timest+1);
+       
 end
