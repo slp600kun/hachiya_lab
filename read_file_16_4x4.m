@@ -17,7 +17,7 @@ pos_frame=strfind(path,'frame');
 pos_freq=strfind(path,'kHz');
 path_name1=path(pos_tof+9:pos_frame-2);
 path_name2=path(pos_frame:end-1);
-Fc=str2num(path(pos_freq-2:pos_freq-1));% [kHz]
+Fc=str2double(path(pos_freq-2:pos_freq-1));% [kHz]
 Fc=1000*Fc;% [Hz]
 
 ch_str = num2str(1,'%02d') ;
@@ -98,6 +98,5 @@ for ix=1:16
     end
     text(10,3.5,['CH : ' ch_str],'FontSize',12)
     set(gca,ax)
-    
     
 end
