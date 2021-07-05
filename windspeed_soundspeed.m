@@ -204,6 +204,8 @@ for i=1:3
     quiver(0,0,wav(1,i),wav(2,i),'-k','LineWidth',3);
     hold off
     
+    
+    
     %% 音速
     for ic=1:8
         c(ic,i)=sound(leng(S1(ic).xpos,S1(ic).ypos,S1(ic+8).xpos,S1(ic+8).ypos),pt.tp(ic,i)/1000,pt.tm(ic,i)/1000);

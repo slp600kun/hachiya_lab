@@ -42,8 +42,7 @@ pos = rem(pos,16);
 if pos == 0
     pos = 16;
 end
-oppos=str2double(file(3:4));
-
+micpos = [12;11;10;9;16;15;14;13];
 
 
 %% サンプリング周波数
@@ -94,7 +93,6 @@ end
 Amp=zeros(2,3);
 Tp=zeros(2,3);
 
-
 for i=1:2
     path(pos_freq-10:pos_freq-9) = num2str(No+i-1,'%02d');
     path_name1(1:2) = num2str(No+i-1,'%02d');
@@ -103,66 +101,213 @@ for i=1:2
         path_name2(8:9)= num2str(pos+(j-1)*16,'%02d');
         file(9:10) = num2str(pos+(j-1)*16,'%02d');
         
-        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(pos+8).xpos,S1(pos+8).ypos,timew);
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
         
         figure(1);subplot(1,2,2)
         hold on
         plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
-        hold off
-        xlim([4.4 4.55]);ylim([0 1.4]);
+        xlim([4.4 4.5]);ylim([0 1.4]);
         xlabel('Time(ms)')
         ylabel('Amplitude')
         grid on
+        tp=title({strcat(num2str(No),path_name1(3:end));strcat(num2str(No+1),path_name1(3:end))});set(tp,tx)        
+    end
+   file(3:4)=num2str(micpos(pos+1),'%02d');
+   for j=1:3
+        path(end-2:end-1)= num2str(pos+1+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(pos+1+(j-1)*16,'%02d');
+        file(9:10) = num2str(pos+1+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,2)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
         tp=title({strcat(num2str(No),path_name1(3:end));strcat(num2str(No+1),path_name1(3:end))});set(tp,tx)        
     end
     
     %% 反対側   
     file(3:4)=num2str(pos,'%02d');
     for j=1:3
-        path(end-2:end-1)= num2str(oppos+(j-1)*16,'%02d');
-        path_name2(8:9)= num2str(oppos+(j-1)*16,'%02d');
-        file(9:10) = num2str(oppos+(j-1)*16,'%02d');
+        path(end-2:end-1)= num2str(micpos(pos)+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(micpos(pos)+(j-1)*16,'%02d');
+        file(9:10) = num2str(micpos(pos)+(j-1)*16,'%02d');
         
-        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(pos+8).xpos,S1(pos+8).ypos,timew);
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
         
         figure(1);subplot(1,2,2)
-        hold on
         plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
-        hold off
     end
+    file(3:4)=num2str(pos+1,'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(micpos(pos+1)+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(micpos(pos+1)+(j-1)*16,'%02d');
+        file(9:10) = num2str(micpos(pos+1)+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,2)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+    end    
     
     %% 比較対象
-    file(3:4) = num2str(17-pos,'%02d');
+    file(3:4) = num2str(micpos(8-pos),'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(8-pos+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(8-pos+(j-1)*16,'%02d');
+        file(9:10) = num2str(8-pos+(j-1)*16,'%02d');
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,2)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','blue')
+    end
+    
+    file(3:4) = num2str(micpos(9-pos),'%02d');
     for j=1:3
         path(end-2:end-1)= num2str(9-pos+(j-1)*16,'%02d');
         path_name2(8:9)= num2str(9-pos+(j-1)*16,'%02d');
         file(9:10) = num2str(9-pos+(j-1)*16,'%02d');
-        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(pos+8).xpos,S1(pos+8).ypos,timew);
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
         
         figure(1);subplot(1,2,2)
-        hold on
         plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','blue')
-        hold off
 
+    end    
+    
+    %% 反対側
+    file(3:4)=num2str(8-pos,'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(micpos(8-pos)+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(micpos(8-pos)+(j-1)*16,'%02d');
+        file(9:10) = num2str(micpos(8-pos)+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,2)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
     end
-    
-    
     file(3:4)=num2str(9-pos,'%02d');
     for j=1:3
-        path(end-2:end-1)= num2str(17-pos+(j-1)*16,'%02d');
-        path_name2(8:9)= num2str(17-pos+(j-1)*16,'%02d');
-        file(9:10) = num2str(17-pos+(j-1)*16,'%02d');
+        path(end-2:end-1)= num2str(micpos(9-pos)+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(micpos(9-pos)+(j-1)*16,'%02d');
+        file(9:10) = num2str(micpos(9-pos)+(j-1)*16,'%02d');
         
-        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(pos+8).xpos,S1(pos+8).ypos,timew);
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
         
         figure(1);subplot(1,2,2)
-        hold on
         plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
-        hold off
-    end  
+    end     
 end
 
 
+%% デフォルト
+path = erase(path,path(pos_wn+4:pos_frame-2));
+subpos_wn = strfind(path_name1,'wn');
+path_name1 = erase(path_name1,path_name1(subpos_wn+4:end));
+for i=1:2
+    path(pos_freq-10:pos_freq-9) = num2str(i,'%02d');
+    path_name1(1:2) = num2str(i,'%02d');
+    file(3:4)=num2str(micpos(pos),'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(pos+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(pos+(j-1)*16,'%02d');
+        file(9:10) = num2str(pos+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,1)
+        hold on
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+        xlim([4.4 4.5]);ylim([0 1.4]);
+        xlabel('Time(ms)')
+        ylabel('Amplitude')
+        grid on
+        tp=title({strcat('01',path_name1(3:end));strcat('02',path_name1(3:end))});set(tp,tx)        
+   end
+   file(3:4)=num2str(micpos(pos+1),'%02d');
+   for j=1:3
+        path(end-2:end-1)= num2str(pos+1+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(pos+1+(j-1)*16,'%02d');
+        file(9:10) = num2str(pos+1+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,1)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+        tp=title({strcat(num2str(No),path_name1(3:end));strcat(num2str(No+1),path_name1(3:end))});set(tp,tx)        
+    end
+     
+    %% 反対側   
+    file(3:4)=num2str(pos,'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(micpos(pos)+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(micpos(pos)+(j-1)*16,'%02d');
+        file(9:10) = num2str(micpos(pos)+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,1)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+    end
+    file(3:4)=num2str(pos+1,'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(micpos(pos+1)+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(micpos(pos+1)+(j-1)*16,'%02d');
+        file(9:10) = num2str(micpos(pos+1)+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,1)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','black')
+    end    
+    
+    %% 比較対象
+    file(3:4) = num2str(micpos(8-pos),'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(8-pos+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(8-pos+(j-1)*16,'%02d');
+        file(9:10) = num2str(8-pos+(j-1)*16,'%02d');
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,1)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','blue')
+    end
+    
+    file(3:4) = num2str(micpos(9-pos),'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(9-pos+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(9-pos+(j-1)*16,'%02d');
+        file(9:10) = num2str(9-pos+(j-1)*16,'%02d');
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,1)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','blue')
+
+    end    
+    
+    %% 反対側
+    file(3:4)=num2str(8-pos,'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(micpos(8-pos)+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(micpos(8-pos)+(j-1)*16,'%02d');
+        file(9:10) = num2str(micpos(8-pos)+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,1)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
+    end
+    file(3:4)=num2str(9-pos,'%02d');
+    for j=1:3
+        path(end-2:end-1)= num2str(micpos(9-pos)+(j-1)*16,'%02d');
+        path_name2(8:9)= num2str(micpos(9-pos)+(j-1)*16,'%02d');
+        file(9:10) = num2str(micpos(9-pos)+(j-1)*16,'%02d');
+        
+        [Tp(i,j),Amp(i,j)]=denpan(iftr,d,delay,Fc,T,xtime,path,file,S1(pos).xpos,S1(pos).ypos,S1(micpos(pos)).xpos,S1(micpos(pos)).ypos,timew);
+        
+        figure(1);subplot(1,2,1)
+        plot(Tp(i,j),Amp(i,j),'o','MarkerEdgeColor','red')
+    end     
+end
 
 %% from templeture to speed of sound
 function T=tem1(t)
@@ -190,20 +335,22 @@ function[tp,amp]=denpan(iftr,d,delay,Fc,T,xtime,path,file,x1,y1,x2,y2,timew)
         if idxmbase < 0
             idxmbase = 1;
         end
-        wdmpoint=idxmbase+96;
         
         % 振幅最大値
         [tymax]=max(abs(wdm(idxmbase:idxmbase+timew)));
   
         % 伝搬時間
-        tppos=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.1), 1 )+idxmbase;
+        tppos=find(abs(wdm(idxmbase:idxmbase+timew))>(tymax*0.15), 1 )+idxmbase;
         tp=xtime(fix(tppos-0.18*192));
 
+        timest=tppos;
+        timeen=timest+fix(0.5*192);
         
         amp=0;
-        for k=0:9
-            amp=amp+abs(wdm(wdmpoint+k));
+        for k=timest:timeen
+            amp=amp+abs(wdm(k));
         end
-        amp=amp/10;
+        amp=amp/(timeen-timest+1);
+       
        
 end
