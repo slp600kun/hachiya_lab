@@ -194,14 +194,6 @@ for i=1:3
         wlist(iw,2*i-1:2*i)=w(:);
     end    
 
-    
-    for iwav=1:8
-        wav(1,i)=wav(1,i)+wlist(iwav,2*i-1);
-        wav(2,i)=wav(2,i)+wlist(iwav,2*i);
-    end
-    wav(1,i)=wav(1,i)/8;
-    wav(2,i)=wav(2,i)/8;
-    quiver(0,0,wav(1,i),wav(2,i),'-k','LineWidth',3);
     hold off
     
     

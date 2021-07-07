@@ -65,7 +65,10 @@ T=tem1((S2(No).Var10+S2(No).Var11)/2);
 
 %% グラフデータ
 f1=figure(1);
-set(f1,'Position', [500 100 1600 800])
+set(f1,'Position', [500 100 1000 500])
+
+f2=figure(2);
+set(f2,'Position', [600 100 1000 500])
 
 %% グラフの切り取り範囲
 if 1 <= rem(str2double(path_name1(1:2)),8) && rem(str2double(path_name1(1:2)),8) <=4
@@ -110,7 +113,8 @@ str5=' 6 \rightarrow 15 ';
 str6=' 7 \rightarrow 14 ';
 str7=' 15 \rightarrow 6 ';
 str8=' 14 \rightarrow 7 ';
-str={str1,str2,str3,str4,str5,str6,str7,str8};
+strA={str1,str2,str3,str4};
+strB={str5,str6,str7,str8};
 
 %% 扇風機
 for i=1:2
@@ -127,6 +131,7 @@ for i=1:2
         
         figure(1);subplot(1,2,2)
         hold on
+        axis equal
         p1 = plot(wdmav,'o','MarkerEdgeColor','black'); set(p1,ps)
         set(gca,ax)
         xlim([-1 1]);ylim([-1 1])
@@ -180,8 +185,16 @@ for i=1:2
         path_name2(8:9)= num2str(8-pos+(j-1)*16,'%02d');
         file(9:10) = num2str(8-pos+(j-1)*16,'%02d');
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);                
-        figure(1);subplot(1,2,2)
+        figure(2);subplot(1,2,2)
+        hold on
         p5 = plot(wdmav,'o','MarkerEdgeColor','blue'); set(p5,ps)
+        axis equal
+        set(gca,ax)
+        xlim([-1 1]);ylim([-1 1])
+        plot([-1 1],[0 0],'k')
+        plot([0 0],[-1 1],'k')
+        tp=title({strcat(num2str(No),path_name1(3:end));strcat(num2str(No+1),path_name1(3:end))});set(tp,tx)
+
     end
     %% 7往路
     file(3:4) = num2str(micpos(9-pos),'%02d');
@@ -190,7 +203,7 @@ for i=1:2
         path_name2(8:9)= num2str(9-pos+(j-1)*16,'%02d');
         file(9:10) = num2str(9-pos+(j-1)*16,'%02d');
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(1);subplot(1,2,2)
+        figure(2);subplot(1,2,2)
         p6 = plot(wdmav,'o','MarkerEdgeColor','magenta'); set(p6,ps)
 
     end    
@@ -203,7 +216,7 @@ for i=1:2
         file(9:10) = num2str(micpos(8-pos)+(j-1)*16,'%02d');
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(1);subplot(1,2,2)
+        figure(2);subplot(1,2,2)
         p7 = plot(wdmav,'s','MarkerEdgeColor','blue'); set(p7,ps)
     end
     %% 7復路
@@ -214,13 +227,17 @@ for i=1:2
         file(9:10) = num2str(micpos(9-pos)+(j-1)*16,'%02d');
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(1);subplot(1,2,2)
+        figure(2);subplot(1,2,2)
         p8 = plot(wdmav,'s','MarkerEdgeColor','magenta'); set(p8,ps)
     end     
 end
 
 figure(1);subplot(1,2,2)
-lgd =legend([p1 p2 p3 p4 p5 p6 p7 p8],str,'Location','northwestoutside');
+legend([p1 p2 p3 p4],strA,'Location','northwest');
+
+
+figure(2);subplot(1,2,2)
+legend([p5 p6 p7 p8],strB,'Location','northeast');
 
 
 %% デフォルト
@@ -240,7 +257,8 @@ for i=1:2
         
         figure(1);subplot(1,2,1)
         hold on
-        pl = plot(wdmav,'o','MarkerEdgeColor','black'); set(pl,ps)
+        axis equal
+        p1 = plot(wdmav,'o','MarkerEdgeColor','black'); set(p1,ps)
         set(gca,ax)
         xlim([-1 1]);ylim([-1 1])
         plot([-1 1],[0 0],'k')
@@ -256,7 +274,7 @@ for i=1:2
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);
         
         figure(1);subplot(1,2,1)
-        plot(wdmav,'o','MarkerEdgeColor','red')
+        p2 = plot(wdmav,'o','MarkerEdgeColor','red'); set(p2,ps)
    end
      
     %% 反対側   
@@ -268,7 +286,7 @@ for i=1:2
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
         figure(1);subplot(1,2,1)
-        plot(wdmav,'s','MarkerEdgeColor','black')
+        p3 = plot(wdmav,'s','MarkerEdgeColor','black'); set(p3,ps)
     end
     file(3:4)=num2str(pos+1,'%02d');
     for j=1:3
@@ -278,7 +296,7 @@ for i=1:2
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
         figure(1);subplot(1,2,1)
-        plot(wdmav,'s','MarkerEdgeColor','red')
+        p4 = plot(wdmav,'s','MarkerEdgeColor','red'); set(p4,ps)
     end    
     
     %% 比較対象
@@ -288,8 +306,15 @@ for i=1:2
         path_name2(8:9)= num2str(8-pos+(j-1)*16,'%02d');
         file(9:10) = num2str(8-pos+(j-1)*16,'%02d');
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(1);subplot(1,2,1)
-        plot(wdmav,'o','MarkerEdgeColor','blue')
+        figure(2);subplot(1,2,1)
+        hold on
+        axis equal
+        p5 = plot(wdmav,'o','MarkerEdgeColor','blue'); set(p5,ps)
+        set(gca,ax)
+        xlim([-1 1]);ylim([-1 1])
+        plot([-1 1],[0 0],'k')
+        plot([0 0],[-1 1],'k')
+        tp=title({strcat(num2str(rem(No,8)),path_name1(3:end));strcat(num2str(rem(No+1,8)),path_name1(3:end))});set(tp,tx)       
     end
     
     file(3:4) = num2str(micpos(9-pos),'%02d');
@@ -298,8 +323,8 @@ for i=1:2
         path_name2(8:9)= num2str(9-pos+(j-1)*16,'%02d');
         file(9:10) = num2str(9-pos+(j-1)*16,'%02d');
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(1);subplot(1,2,1)
-        plot(wdmav,'o','MarkerEdgeColor','magenta')
+        figure(2);subplot(1,2,1)
+        p6 = plot(wdmav,'o','MarkerEdgeColor','magenta'); set(p6,ps)
 
     end    
     
@@ -311,8 +336,8 @@ for i=1:2
         file(9:10) = num2str(micpos(8-pos)+(j-1)*16,'%02d');
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(1);subplot(1,2,1)
-        plot(wdmav,'s','MarkerEdgeColor','blue')
+        figure(2);subplot(1,2,1)
+        p7 = plot(wdmav,'s','MarkerEdgeColor','blue'); set(p7,ps)
     end
     file(3:4)=num2str(9-pos,'%02d');
     for j=1:3
@@ -321,11 +346,16 @@ for i=1:2
         file(9:10) = num2str(micpos(9-pos)+(j-1)*16,'%02d');
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(1);subplot(1,2,1)
-        plot(wdmav,'s','MarkerEdgeColor','magenta')
+        figure(2);subplot(1,2,1)
+        p8 = plot(wdmav,'s','MarkerEdgeColor','magenta'); set(p8,ps)
     end     
 end
+figure(1);subplot(1,2,1)
+legend([p1 p2 p3 p4],strA,'Location','northwest');
 
+
+figure(2);subplot(1,2,1)
+legend([p5 p6 p7 p8],strB,'Location','northwest');
 
 %% from templeture to speed of sound
 function T=tem1(t)
