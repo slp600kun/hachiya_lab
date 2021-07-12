@@ -98,8 +98,6 @@ idxmbase=fix(1.5*192000/T+0.18*192);
 if idxmbase < 0
 idxmbase = 1;
 end
-time.s=xtime(fix(idxmbase-0.18*192));
-time.e=xtime(fix(idxmbase-0.18*192+timew));
 
 wdmpoint = fix(idxmbase+96);
 
@@ -115,6 +113,11 @@ str7=' 15 \rightarrow 6 ';
 str8=' 14 \rightarrow 7 ';
 strA={str1,str2,str3,str4};
 strB={str5,str6,str7,str8};
+title1="通常時の経路間波形の複素数表示(直交経路)";
+title2="通常時の経路間波形の複素数表示(風に沿う経路)";
+title3="扇風機設置時の経路間波形の複素数表示(直交経路)";
+title4="扇風機設置時の経路間波形の複素数表示(風に沿う経路)";
+
 
 %% 扇風機
 for i=1:2
@@ -129,7 +132,7 @@ for i=1:2
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);
         
-        figure(1);subplot(1,2,2)
+        figure(2);subplot(1,2,1)
         hold on
         axis equal
         p1 = plot(wdmav,'o','MarkerEdgeColor','black'); set(p1,ps)
@@ -137,7 +140,7 @@ for i=1:2
         xlim([-1 1]);ylim([-1 1])
         plot([-1 1],[0 0],'k')
         plot([0 0],[-1 1],'k')
-        tp=title({strcat(num2str(No),path_name1(3:end));strcat(num2str(No+1),path_name1(3:end))});set(tp,tx)
+        tp=title(title3);set(tp,tx)
         
     end
     %% 3往路
@@ -149,7 +152,7 @@ for i=1:2
 
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);
 
-        figure(1);subplot(1,2,2)
+        figure(2);subplot(1,2,1)
         p2 = plot(wdmav,'o','MarkerEdgeColor','red'); set(p2,ps)
     end
 
@@ -162,7 +165,7 @@ for i=1:2
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);
         
-        figure(1);subplot(1,2,2)
+        figure(2);subplot(1,2,1)
         p3 =plot(wdmav,'s','MarkerEdgeColor','black'); set(p3,ps)
     end
     %% 3復路
@@ -174,7 +177,7 @@ for i=1:2
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);
         
-        figure(1);subplot(1,2,2)
+        figure(2);subplot(1,2,1)
         p4 = plot(wdmav,'s','MarkerEdgeColor','red'); set(p4,ps)
     end    
     
@@ -193,7 +196,7 @@ for i=1:2
         xlim([-1 1]);ylim([-1 1])
         plot([-1 1],[0 0],'k')
         plot([0 0],[-1 1],'k')
-        tp=title({strcat(num2str(No),path_name1(3:end));strcat(num2str(No+1),path_name1(3:end))});set(tp,tx)
+        tp=title(title4);set(tp,tx)
 
     end
     %% 7往路
@@ -263,7 +266,7 @@ for i=1:2
         xlim([-1 1]);ylim([-1 1])
         plot([-1 1],[0 0],'k')
         plot([0 0],[-1 1],'k')
-        tp=title({strcat(num2str(rem(No,8)),path_name1(3:end));strcat(num2str(rem(No+1,8)),path_name1(3:end))});set(tp,tx)        
+        tp=title(title1);set(tp,tx)        
    end
    file(3:4)=num2str(micpos(pos+1),'%02d');
    for j=1:3
@@ -306,7 +309,7 @@ for i=1:2
         path_name2(8:9)= num2str(8-pos+(j-1)*16,'%02d');
         file(9:10) = num2str(8-pos+(j-1)*16,'%02d');
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(2);subplot(1,2,1)
+        figure(1);subplot(1,2,2)
         hold on
         axis equal
         p5 = plot(wdmav,'o','MarkerEdgeColor','blue'); set(p5,ps)
@@ -314,7 +317,7 @@ for i=1:2
         xlim([-1 1]);ylim([-1 1])
         plot([-1 1],[0 0],'k')
         plot([0 0],[-1 1],'k')
-        tp=title({strcat(num2str(rem(No,8)),path_name1(3:end));strcat(num2str(rem(No+1,8)),path_name1(3:end))});set(tp,tx)       
+        tp=title(title2);set(tp,tx)       
     end
     
     file(3:4) = num2str(micpos(9-pos),'%02d');
@@ -323,7 +326,7 @@ for i=1:2
         path_name2(8:9)= num2str(9-pos+(j-1)*16,'%02d');
         file(9:10) = num2str(9-pos+(j-1)*16,'%02d');
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(2);subplot(1,2,1)
+        figure(1);subplot(1,2,2)
         p6 = plot(wdmav,'o','MarkerEdgeColor','magenta'); set(p6,ps)
 
     end    
@@ -336,7 +339,7 @@ for i=1:2
         file(9:10) = num2str(micpos(8-pos)+(j-1)*16,'%02d');
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(2);subplot(1,2,1)
+        figure(1);subplot(1,2,2)
         p7 = plot(wdmav,'s','MarkerEdgeColor','blue'); set(p7,ps)
     end
     file(3:4)=num2str(9-pos,'%02d');
@@ -346,7 +349,7 @@ for i=1:2
         file(9:10) = num2str(micpos(9-pos)+(j-1)*16,'%02d');
         
         wdmav=denpan(iftr,d,delay,Fc,path,file,wdmpoint);        
-        figure(2);subplot(1,2,1)
+        figure(1);subplot(1,2,2)
         p8 = plot(wdmav,'s','MarkerEdgeColor','magenta'); set(p8,ps)
     end     
 end
